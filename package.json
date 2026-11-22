@@ -1,14 +1,14 @@
 {
-  "name": "zen-plug",
+  "name": "onskeskyen-wishdrop",
   "version": "0.2.0",
   "private": true,
-  "description": "Zen Browser extension: add the current product page to Ønskeskyen",
+  "description": "Wishdrop: Firefox extension that drops the current product page into your Ønskeskyen wishlist",
   "type": "module",
   "scripts": {
-    "dev": "web-ext run --source-dir src --firefox=${ZEN_BIN:-/Applications/Zen.app/Contents/MacOS/zen} --start-url https://www.elgiganten.dk",
+    "dev": "web-ext run --source-dir src --start-url https://www.elgiganten.dk",
     "validate": "vp check && web-ext lint --source-dir src",
     "test": "vp test run",
-    "build": "web-ext build --source-dir src --artifacts-dir dist --overwrite-dest --filename onskeskyen-quick-add-{version}.zip",
+    "build": "web-ext build --source-dir src --artifacts-dir dist --overwrite-dest --filename onskeskyen-wishdrop-{version}.zip",
     "prepare": "vp config"
   },
   "devDependencies": {

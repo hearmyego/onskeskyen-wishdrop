@@ -1,7 +1,7 @@
-# zen-plug — Ønskeskyen Quick Add
+# Wishdrop for Ønskeskyen
 
-A Zen Browser extension (works in Zen and Firefox). Click the toolbar button on any product page and it opens
-Ønskeskyen's quick-add page for that product:
+`onskeskyen-wishdrop` is a Firefox extension. It also works in Firefox-based browsers.
+Click the toolbar button on any product page and it opens Ønskeskyen's quick-add page for that product:
 
 ```
 https://onskeskyen.dk/da/quick-add?crawlerTarget=<encoded product URL>
@@ -46,14 +46,15 @@ automatically. Vite+ dependency aliasing lives in `pnpm-workspace.yaml`. Don't u
 
 ```sh
 vp install       # install deps (also sets up the pre-commit hook)
-vpr dev          # launch Zen with the extension loaded (live reload)
+vpr dev          # launch Firefox with the extension loaded (live reload)
 vp test          # unit tests (watch mode); `vpr test` runs once
 vp check         # format + lint + type check (`vp check --fix` to autofix)
 vpr validate     # vp check + web-ext lint of the manifest
 vpr build        # zip -> dist/
 ```
 
-`vpr dev` uses `/Applications/Zen.app/Contents/MacOS/zen`. You can override it with `ZEN_BIN=/path/to/zen vpr dev`.
+`vpr dev` finds your installed Firefox automatically. To use another Firefox build, such as Developer Edition or Nightly,
+set `WEB_EXT_FIREFOX`, e.g. `WEB_EXT_FIREFOX=nightly vpr dev` or `WEB_EXT_FIREFOX=/path/to/firefox vpr dev`.
 
 The pre-commit hook runs `vp check --fix` on staged files.
 
@@ -69,12 +70,12 @@ vpr validate
 The unit tests cover how the quick-add URL is built, which pages are addable, and which tabs may be closed. `validate` checks the manifest
 against Mozilla's add-on linter.
 
-### 2. Manual test in Zen
+### 2. Manual test in Firefox
 
-1. Log in at <https://onskeskyen.dk> in Zen. With `vpr dev`, log in inside the browser window it opens, because
+1. Log in at <https://onskeskyen.dk> in Firefox. With `vpr dev`, log in inside the browser window it opens, because
    `web-ext` uses a fresh, temporary profile.
 2. Start the extension, either with `vpr dev` or by loading it manually (see below).
-3. The cloud button appears directly in the toolbar. If you installed an older version where it was unpinned, Zen
+3. The cloud button appears directly in the toolbar. If you installed an older version where it was unpinned, Firefox
    remembers that choice: remove the extension and add it again, or pin it from the extensions menu.
 4. Open a product page, e.g. any product on elgiganten.dk, proshop.dk or zalando.dk.
 5. Click the button and check that:
@@ -90,10 +91,10 @@ against Mozilla's add-on linter.
 ### Loading manually
 
 Go to `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and select `src/manifest.json`.
-The extension stays loaded until Zen restarts.
+The extension stays loaded until Firefox restarts.
 
 ### Installing permanently
 
-Zen, like release Firefox, only installs signed extensions permanently. Sign the extension through
+Release Firefox only installs signed extensions permanently. Sign the extension through
 [addons.mozilla.org](https://addons.mozilla.org/developers/) as "unlisted" (`web-ext sign`). Or set
-`xpinstall.signatures.required = false` in `about:config` if your Zen build allows it.
+`xpinstall.signatures.required = false` in `about:config` on Firefox Developer Edition, Nightly or ESR. Release Firefox ignores this setting.

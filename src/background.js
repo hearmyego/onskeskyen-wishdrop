@@ -1,4 +1,4 @@
-// Ønskeskyen Quick Add
+// Wishdrop for Ønskeskyen
 //
 // On toolbar click: open Ønskeskyen's own quick-add page with the current tab's
 // URL as `crawlerTarget`. Ønskeskyen scrapes the product and lets the user pick
@@ -53,7 +53,7 @@ if (typeof browser !== "undefined") {
   browser.runtime.onMessage.addListener((message, sender) => {
     if (message?.type !== "close-quick-add") return;
     if (!sender.tab?.id || !isQuickAddPage(sender.url)) return;
-    // Zen/Firefox returns focus to the opener (product) tab.
+    // Firefox returns focus to the opener (product) tab.
     return browser.tabs.remove(sender.tab.id);
   });
 }
