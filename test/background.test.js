@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vite-plus/test";
-import { buildQuickAddUrl, isAddable } from "../src/background.js";
+import { buildQuickAddUrl, isAddable, isQuickAddPage } from "../src/background.js";
 
 describe("buildQuickAddUrl", () => {
   test("builds quick-add URL with encoded crawlerTarget", () => {
@@ -20,5 +20,17 @@ describe("isAddable", () => {
     ["not a url", false],
   ])("%s -> %s", (url, expected) => {
     expect(isAddable(url)).toBe(expected);
+  });
+});
+
+describe("isQuickAddPage", () => {
+  test.each([
+    ["https://onskeskyen.dk/da/quick-add?crawlerTarget=x", true],
+    ["https://onskeskyen.dk/quick-add", true],
+    ["https://onskeskyen.dk/da/wishlist/123", false],
+    ["https://evil.example/da/quick-add", false],
+    [undefined, false],
+  ])("%s -> %s", (url, expected) => {
+    expect(isQuickAddPage(url)).toBe(expected);
   });
 });

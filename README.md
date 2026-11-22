@@ -8,20 +8,34 @@ https://onskeskyen.dk/da/quick-add?crawlerTarget=<encoded product URL>
 ```
 
 Ønskeskyen reads the product details itself and lets you pick a wishlist. If you aren't logged in on onskeskyen.dk,
-it asks you to log in.
+it asks you to log in. When the wish is saved, the tab closes and you're back on the product page.
 
-**No data stored.** The extension has no storage, no content scripts and no host permissions. It only uses
-`activeTab` to read the current tab's URL when you click the button.
+The button is placed directly in the toolbar (`action.default_area: "navbar"`), so you don't have to open the
+extensions menu to find it.
 
-## Layout
+**No data stored.** The extension has no storage and collects nothing. It uses:
 
-```
-src/
-  manifest.json     MV3 manifest (Gecko)
-  background.js     click handler + URL builder
-  icons/icon.svg
-test/               node:test unit tests
-```
+- `activeTab` to read the current tab's URL when you click the button.
+- a small content script on `onskeskyen.dk/*quick-add*` that listens for the page's "done" signal (see below) and
+  closes the tab.
+
+## How the quick-add page works
+
+These details come from reading Ønskeskyen's frontend bundle (`pages/quick-add-*.js`). Nothing here is a documented
+API, so it can change without notice.
+
+| Query param      | Used for                                                                                                                                                                                                 |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `crawlerTarget`  | **The product URL.** Ønskeskyen scrapes title, images, price and currency from it on its servers. This is the only param that changes what gets added.                                                   |
+| `metadataSource` | Analytics tag for where the wish came from. Defaults to `PartnerWishButton`. Other values (`CrawledUrl`, `Other`, ...) only change tracking. `ProductSearch` also reads `sourceId` from the product URL. |
+| `source`         | Passed to the wishlist picker as a tracking source.                                                                                                                                                      |
+
+There are no params for title, price, image, note or target wishlist. You set those in the form. If you aren't logged
+in, the page redirects to `/login?origin=quickadd&redirect=/quick-add?crawlerTarget=...` and comes back afterwards.
+
+**Closing:** the page was built to run inside a shop's iframe ("wish button"). It calls
+`window.top.postMessage("onClose", "*")` 700 ms after a wish is saved, and also when you click its ✕ button. In a normal tab
+that message goes to the page itself. `src/quick-add-close.js` listens for it, and the background script closes the tab.
 
 ## Development
 
@@ -52,7 +66,7 @@ vpr test
 vpr validate
 ```
 
-The unit tests cover how the quick-add URL is built and which pages are addable. `validate` checks the manifest
+The unit tests cover how the quick-add URL is built, which pages are addable, and which tabs may be closed. `validate` checks the manifest
 against Mozilla's add-on linter.
 
 ### 2. Manual test in Zen
@@ -60,12 +74,15 @@ against Mozilla's add-on linter.
 1. Log in at <https://onskeskyen.dk> in Zen. With `vpr dev`, log in inside the browser window it opens, because
    `web-ext` uses a fresh, temporary profile.
 2. Start the extension, either with `vpr dev` or by loading it manually (see below).
-3. Pin the button if needed: open the extensions menu (puzzle icon) and pin **Ønskeskyen Quick Add**.
+3. The cloud button appears directly in the toolbar. If you installed an older version where it was unpinned, Zen
+   remembers that choice: remove the extension and add it again, or pin it from the extensions menu.
 4. Open a product page, e.g. any product on elgiganten.dk, proshop.dk or zalando.dk.
 5. Click the button and check that:
    - a new tab opens to the right with `https://onskeskyen.dk/da/quick-add?crawlerTarget=<product URL>`
    - Ønskeskyen shows the product's title, image and price
    - you can pick a wishlist and the wish appears in your account
+   - about 0.7 s after saving, the quick-add tab closes and focus returns to the product page
+   - clicking the ✕ in the quick-add form also closes the tab
 6. Negative checks: clicking on `about:newtab`, an `about:` page or an onskeskyen.dk page does nothing.
 7. Debug: in `about:debugging#/runtime/this-firefox`, click **Inspect** on the extension to see the background
    console.

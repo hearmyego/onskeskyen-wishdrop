@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Ønskeskyen Quick Add",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Add the product page you're viewing to your Ønskeskyen wishlist with one click.",
   "icons": {
     "48": "icons/icon.svg",
@@ -14,8 +14,16 @@
   },
   "action": {
     "default_title": "Tilføj til Ønskeskyen",
-    "default_icon": "icons/icon.svg"
+    "default_icon": "icons/icon.svg",
+    "default_area": "navbar"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://onskeskyen.dk/*quick-add*"],
+      "js": ["quick-add-close.js"],
+      "run_at": "document_start"
+    }
+  ],
   "browser_specific_settings": {
     "gecko": {
       "id": "onskeskyen-quick-add@zen-plug",
