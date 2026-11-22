@@ -4,10 +4,10 @@ A Zen Browser extension (works in Zen and Firefox). Click the toolbar button on 
 Ønskeskyen's quick-add page for that product:
 
 ```
-https://onskeskyen.no/quick-add?crawlerTarget=<encoded product URL>
+https://onskeskyen.dk/da/quick-add?crawlerTarget=<encoded product URL>
 ```
 
-Ønskeskyen reads the product details itself and lets you pick a wishlist. If you aren't logged in on onskeskyen.no,
+Ønskeskyen reads the product details itself and lets you pick a wishlist. If you aren't logged in on onskeskyen.dk,
 it asks you to log in.
 
 **No data stored.** The extension has no storage, no content scripts and no host permissions. It only uses
@@ -57,16 +57,16 @@ against Mozilla's add-on linter.
 
 ### 2. Manual test in Zen
 
-1. Log in at <https://onskeskyen.no> in Zen. With `vpr dev`, log in inside the browser window it opens, because
+1. Log in at <https://onskeskyen.dk> in Zen. With `vpr dev`, log in inside the browser window it opens, because
    `web-ext` uses a fresh, temporary profile.
 2. Start the extension, either with `vpr dev` or by loading it manually (see below).
 3. Pin the button if needed: open the extensions menu (puzzle icon) and pin **Ønskeskyen Quick Add**.
-4. Open a product page, e.g. any product on elkjop.no, komplett.no or zalando.no.
+4. Open a product page, e.g. any product on elgiganten.dk, proshop.dk or zalando.dk.
 5. Click the button and check that:
-   - a new tab opens to the right with `https://onskeskyen.no/quick-add?crawlerTarget=<product URL>`
+   - a new tab opens to the right with `https://onskeskyen.dk/da/quick-add?crawlerTarget=<product URL>`
    - Ønskeskyen shows the product's title, image and price
    - you can pick a wishlist and the wish appears in your account
-6. Negative checks: clicking on `about:newtab`, an `about:` page or an onskeskyen.no page does nothing.
+6. Negative checks: clicking on `about:newtab`, an `about:` page or an onskeskyen.dk page does nothing.
 7. Debug: in `about:debugging#/runtime/this-firefox`, click **Inspect** on the extension to see the background
    console.
 

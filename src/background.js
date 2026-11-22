@@ -2,11 +2,11 @@
 //
 // On toolbar click: open Ønskeskyen's own quick-add page with the current tab's
 // URL as `crawlerTarget`. Ønskeskyen scrapes the product and lets the user pick
-// a wishlist. Login is handled by the user's existing onskeskyen.no session.
+// a wishlist. Login is handled by the user's existing onskeskyen.dk session.
 //
 // Nothing is stored by this extension.
 
-const QUICK_ADD_URL = "https://onskeskyen.no/quick-add";
+const QUICK_ADD_URL = "https://onskeskyen.dk/da/quick-add";
 
 export function buildQuickAddUrl(productUrl) {
   const url = new URL(QUICK_ADD_URL);
