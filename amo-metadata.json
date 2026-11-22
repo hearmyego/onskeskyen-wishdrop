@@ -1,0 +1,14 @@
+{
+  "categories": ["shopping"],
+  "summary": {
+    "en-US": "One click on any product page adds it to your Ønskeskyen wishlist. Unofficial, nothing stored.",
+    "da": "Ét klik på en produktside tilføjer den til din Ønskeskyen-ønskeliste. Uofficiel, intet gemmes."
+  },
+  "description": {
+    "en-US": "Click the Wishdrop button on any product page. Ønskeskyen's own quick-add page opens in a small popup, reads the product, and lets you pick a wishlist. When the wish is saved, the popup closes.\n\nNo account data, no tracking, no storage: the extension only reads the current page URL when you click.\n\nNot affiliated with or endorsed by Ønskeskyen / GoWish.",
+    "da": "Klik på Wishdrop-knappen på en produktside. Ønskeskyens egen hurtig-tilføj-side åbner i et lille vindue, henter produktet og lader dig vælge en ønskeliste. Når ønsket er gemt, lukker vinduet.\n\nIngen kontodata, ingen sporing, intet gemt: udvidelsen læser kun den aktuelle sides URL, når du klikker.\n\nIkke tilknyttet eller godkendt af Ønskeskyen / GoWish."
+  },
+  "homepage": { "en-US": "https://github.com/hearmyego/onskeskyen-wishdrop" },
+  "support_url": { "en-US": "https://github.com/hearmyego/onskeskyen-wishdrop/issues" },
+  "version": { "license": "MIT" }
+}

@@ -1,5 +1,7 @@
 # Wishdrop for Ønskeskyen
 
+> **Unofficial.** Not affiliated with or endorsed by Ønskeskyen / GoWish.
+
 Firefox extension (+ Firefox-based browsers). Toolbar click on product page → Ønskeskyen quick-add opens in centred popup → pick wishlist → popup closes.
 
 ```
@@ -18,7 +20,9 @@ https://onskeskyen.dk/da/quick-add?crawlerTarget=<encoded product URL>
 src/manifest.json        MV3 manifest
 src/background.js        click → popup; close on request
 src/quick-add-close.js   content script, forwards page's "onClose"
-src/icons/icon.svg
+src/icons/               icon.svg (source) + PNGs (vpr icons)
+scripts/icons.js         SVG → PNG 16/32/48/96/128
+amo-metadata.json        AMO listing: summary, description (EN/DA), category, license
 test/                    unit tests
 ```
 
@@ -48,6 +52,8 @@ vpr test       # tests once (vp test = watch)
 vp check       # fmt + lint + types (--fix)
 vpr validate   # vp check + web-ext lint
 vpr build      # zip → dist/
+vpr icons      # regenerate PNGs after editing icon.svg
+vpr release    # sign + submit listed version to AMO
 ```
 
 - Other Firefox: `WEB_EXT_FIREFOX=nightly vpr dev` or `=/path/to/firefox`.
@@ -70,6 +76,30 @@ vpr build      # zip → dist/
    - ✕ also closes popup
 5. Negative: `about:` pages + onskeskyen.dk pages → nothing.
 6. Debug: `about:debugging#/runtime/this-firefox` → **Inspect**.
+
+## Publishing (AMO)
+
+One-time:
+
+1. Create an account at [addons.mozilla.org](https://addons.mozilla.org/developers/).
+2. Developer Hub → Tools → **Manage API Keys**. Get the JWT issuer + secret.
+
+Release:
+
+1. Bump `version` in `src/manifest.json` + `package.json`.
+2. `vpr test && vpr validate`
+3. Run:
+   ```sh
+   WEB_EXT_API_KEY=user:… WEB_EXT_API_SECRET=… vpr release
+   ```
+   - First run creates the listing from `amo-metadata.json`.
+   - Signed `.xpi` → `dist/`. Review usually takes minutes to hours.
+4. AMO dashboard (first time): add screenshots + icon (`src/icons/icon-128.png`).
+5. Tag: `git tag v<version> && git push --tags`
+
+- Never commit API keys.
+- Gecko ID `wishdrop@hearmyego.github.io` is permanent. Never change it.
+- `vpr sign:unlisted`: self-distributed signed `.xpi`, no listing.
 
 ## Install
 
