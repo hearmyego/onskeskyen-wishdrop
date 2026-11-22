@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Wishdrop for Ønskeskyen",
   "version": "1.0.0",
-  "description": "Drop the product you are looking at into your Ønskeskyen wishlist. One click, nothing stored. Unofficial.",
+  "description": "Drop the product you are looking at into your Ønskeskyen wishlist. One click; only the page URL goes to Ønskeskyen. Unofficial.",
   "author": "Michael Brandt",
   "homepage_url": "https://github.com/hearmyego/onskeskyen-wishdrop",
   "icons": {
@@ -34,7 +34,7 @@
       "id": "wishdrop@hearmyego.github.io",
       "strict_min_version": "142.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": ["browsingActivity"]
       }
     }
   },
