@@ -1,0 +1,16 @@
+{
+  "name": "zen-plug",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zen Browser extension: add the current product page to Ønskeskyen",
+  "type": "module",
+  "scripts": {
+    "start": "web-ext run --source-dir src --firefox=${ZEN_BIN:-/Applications/Zen.app/Contents/MacOS/zen} --start-url https://www.elkjop.no",
+    "lint": "web-ext lint --source-dir src",
+    "test": "node --test",
+    "build": "web-ext build --source-dir src --artifacts-dir dist --overwrite-dest --filename onskeskyen-quick-add-{version}.zip"
+  },
+  "devDependencies": {
+    "web-ext": "^10.8.0"
+  }
+}
