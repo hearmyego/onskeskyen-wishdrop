@@ -75,3 +75,7 @@ vpr build      # zip → dist/
 
 - **Temporary:** `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on…** → `src/manifest.json`. Gone on restart.
 - **Permanent:** release Firefox needs signing. AMO "unlisted" via `web-ext sign`. Dev Edition/Nightly/ESR: `xpinstall.signatures.required = false`.
+
+## License
+
+[MIT](LICENSE)
