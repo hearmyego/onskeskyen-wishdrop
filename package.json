@@ -5,12 +5,17 @@
   "description": "Zen Browser extension: add the current product page to Ønskeskyen",
   "type": "module",
   "scripts": {
-    "start": "web-ext run --source-dir src --firefox=${ZEN_BIN:-/Applications/Zen.app/Contents/MacOS/zen} --start-url https://www.elkjop.no",
-    "lint": "web-ext lint --source-dir src",
-    "test": "node --test",
-    "build": "web-ext build --source-dir src --artifacts-dir dist --overwrite-dest --filename onskeskyen-quick-add-{version}.zip"
+    "dev": "web-ext run --source-dir src --firefox=${ZEN_BIN:-/Applications/Zen.app/Contents/MacOS/zen} --start-url https://www.elkjop.no",
+    "validate": "vp check && web-ext lint --source-dir src",
+    "test": "vp test run",
+    "build": "web-ext build --source-dir src --artifacts-dir dist --overwrite-dest --filename onskeskyen-quick-add-{version}.zip",
+    "prepare": "vp config"
   },
   "devDependencies": {
+    "vite-plus": "1.4.0",
     "web-ext": "^10.8.0"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.4.0"
   }
 }
