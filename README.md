@@ -27,6 +27,9 @@ test/               node:test unit tests
 
 Uses [Vite+](https://viteplus.dev) (`vp`) for install, tests, lint, format and type checks. `web-ext` handles running and packaging the extension.
 
+The package manager is **pnpm**, pinned via `devEngines.packageManager` in `package.json`. `vp` picks the right version
+automatically. Vite+ dependency aliasing lives in `pnpm-workspace.yaml`. Don't use npm/yarn. Commit `pnpm-lock.yaml`.
+
 ```sh
 vp install       # install deps (also sets up the pre-commit hook)
 vpr dev          # launch Zen with the extension loaded (live reload)
