@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Wishdrop for Ønskeskyen",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Drop the product you are looking at straight into your Ønskeskyen wishlist. One click, nothing stored.",
   "icons": {
     "48": "icons/icon.svg",

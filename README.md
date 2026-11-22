@@ -8,7 +8,8 @@ https://onskeskyen.dk/da/quick-add?crawlerTarget=<encoded product URL>
 ```
 
 Ønskeskyen reads the product details itself and lets you pick a wishlist. If you aren't logged in on onskeskyen.dk,
-it asks you to log in. When the wish is saved, the tab closes and you're back on the product page.
+it asks you to log in. The page opens in a small popup window centred over the browser, like a "Sign in with Google" window. When the
+wish is saved, the popup closes and you're back on the product page.
 
 The button is placed directly in the toolbar (`action.default_area: "navbar"`), so you don't have to open the
 extensions menu to find it.
@@ -17,7 +18,7 @@ extensions menu to find it.
 
 - `activeTab` to read the current tab's URL when you click the button.
 - a small content script on `onskeskyen.dk/*quick-add*` that listens for the page's "done" signal (see below) and
-  closes the tab.
+  closes the popup.
 
 ## How the quick-add page works
 
@@ -34,8 +35,8 @@ There are no params for title, price, image, note or target wishlist. You set th
 in, the page redirects to `/login?origin=quickadd&redirect=/quick-add?crawlerTarget=...` and comes back afterwards.
 
 **Closing:** the page was built to run inside a shop's iframe ("wish button"). It calls
-`window.top.postMessage("onClose", "*")` 700 ms after a wish is saved, and also when you click its ✕ button. In a normal tab
-that message goes to the page itself. `src/quick-add-close.js` listens for it, and the background script closes the tab.
+`window.top.postMessage("onClose", "*")` 700 ms after a wish is saved, and also when you click its ✕ button. In our popup window
+that message goes to the page itself. `src/quick-add-close.js` listens for it, and the background script closes the popup.
 
 ## Development
 
@@ -67,7 +68,7 @@ vpr test
 vpr validate
 ```
 
-The unit tests cover how the quick-add URL is built, which pages are addable, and which tabs may be closed. `validate` checks the manifest
+The unit tests cover how the quick-add URL is built, which pages are addable, which pages may be closed, and how the popup is centred. `validate` checks the manifest
 against Mozilla's add-on linter.
 
 ### 2. Manual test in Firefox
@@ -79,11 +80,12 @@ against Mozilla's add-on linter.
    remembers that choice: remove the extension and add it again, or pin it from the extensions menu.
 4. Open a product page, e.g. any product on elgiganten.dk, proshop.dk or zalando.dk.
 5. Click the button and check that:
-   - a new tab opens to the right with `https://onskeskyen.dk/da/quick-add?crawlerTarget=<product URL>`
+   - a small popup window (480×760) opens centred over the browser, showing
+     `https://onskeskyen.dk/da/quick-add?crawlerTarget=<product URL>`
    - Ønskeskyen shows the product's title, image and price
    - you can pick a wishlist and the wish appears in your account
-   - about 0.7 s after saving, the quick-add tab closes and focus returns to the product page
-   - clicking the ✕ in the quick-add form also closes the tab
+   - about 0.7 s after saving, the popup closes and focus returns to the product page
+   - clicking the ✕ in the quick-add form also closes the popup
 6. Negative checks: clicking on `about:newtab`, an `about:` page or an onskeskyen.dk page does nothing.
 7. Debug: in `about:debugging#/runtime/this-firefox`, click **Inspect** on the extension to see the background
    console.
