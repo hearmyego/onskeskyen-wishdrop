@@ -2,3 +2,6 @@ node_modules/
 dist/
 web-ext-artifacts/
 .DS_Store
+
+# Private maintainer notes
+MAINTAINER.md
