@@ -1,102 +1,77 @@
 # Wishdrop for Ønskeskyen
 
-`onskeskyen-wishdrop` is a Firefox extension. It also works in Firefox-based browsers.
-Click the toolbar button on any product page and it opens Ønskeskyen's quick-add page for that product:
+Firefox extension (+ Firefox-based browsers). Toolbar click on product page → Ønskeskyen quick-add opens in centred popup → pick wishlist → popup closes.
 
 ```
 https://onskeskyen.dk/da/quick-add?crawlerTarget=<encoded product URL>
 ```
 
-Ønskeskyen reads the product details itself and lets you pick a wishlist. If you aren't logged in on onskeskyen.dk,
-it asks you to log in. The page opens in a small popup window centred over the browser, like a "Sign in with Google" window. When the
-wish is saved, the popup closes and you're back on the product page.
+- Ønskeskyen scrapes product itself. Not logged in → it asks.
+- Button pinned to toolbar (`action.default_area: "navbar"`).
+- **Nothing stored, nothing collected.** Uses only:
+  - `activeTab`: read current URL on click
+  - content script on `onskeskyen.dk/*quick-add*`: hears "done" signal → closes popup
 
-The button is placed directly in the toolbar (`action.default_area: "navbar"`), so you don't have to open the
-extensions menu to find it.
+## Layout
 
-**No data stored.** The extension has no storage and collects nothing. It uses:
-
-- `activeTab` to read the current tab's URL when you click the button.
-- a small content script on `onskeskyen.dk/*quick-add*` that listens for the page's "done" signal (see below) and
-  closes the popup.
-
-## How the quick-add page works
-
-These details come from reading Ønskeskyen's frontend bundle (`pages/quick-add-*.js`). Nothing here is a documented
-API, so it can change without notice.
-
-| Query param      | Used for                                                                                                                                                                                                 |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `crawlerTarget`  | **The product URL.** Ønskeskyen scrapes title, images, price and currency from it on its servers. This is the only param that changes what gets added.                                                   |
-| `metadataSource` | Analytics tag for where the wish came from. Defaults to `PartnerWishButton`. Other values (`CrawledUrl`, `Other`, ...) only change tracking. `ProductSearch` also reads `sourceId` from the product URL. |
-| `source`         | Passed to the wishlist picker as a tracking source.                                                                                                                                                      |
-
-There are no params for title, price, image, note or target wishlist. You set those in the form. If you aren't logged
-in, the page redirects to `/login?origin=quickadd&redirect=/quick-add?crawlerTarget=...` and comes back afterwards.
-
-**Closing:** the page was built to run inside a shop's iframe ("wish button"). It calls
-`window.top.postMessage("onClose", "*")` 700 ms after a wish is saved, and also when you click its ✕ button. In our popup window
-that message goes to the page itself. `src/quick-add-close.js` listens for it, and the background script closes the popup.
-
-## Development
-
-Uses [Vite+](https://viteplus.dev) (`vp`) for install, tests, lint, format and type checks. `web-ext` handles running and packaging the extension.
-
-The package manager is **pnpm**, pinned via `devEngines.packageManager` in `package.json`. `vp` picks the right version
-automatically. Vite+ dependency aliasing lives in `pnpm-workspace.yaml`. Don't use npm/yarn. Commit `pnpm-lock.yaml`.
-
-```sh
-vp install       # install deps (also sets up the pre-commit hook)
-vpr dev          # launch Firefox with the extension loaded (live reload)
-vp test          # unit tests (watch mode); `vpr test` runs once
-vp check         # format + lint + type check (`vp check --fix` to autofix)
-vpr validate     # vp check + web-ext lint of the manifest
-vpr build        # zip -> dist/
+```
+src/manifest.json        MV3 manifest
+src/background.js        click → popup; close on request
+src/quick-add-close.js   content script, forwards page's "onClose"
+src/icons/icon.svg
+test/                    unit tests
 ```
 
-`vpr dev` finds your installed Firefox automatically. To use another Firefox build, such as Developer Edition or Nightly,
-set `WEB_EXT_FIREFOX`, e.g. `WEB_EXT_FIREFOX=nightly vpr dev` or `WEB_EXT_FIREFOX=/path/to/firefox vpr dev`.
+## Quick-add internals
 
-The pre-commit hook runs `vp check --fix` on staged files.
+From Ønskeskyen frontend bundle (`pages/quick-add-*.js`). Undocumented, may change.
 
-## Testing the plugin
+| Param            | Effect                                                                                  |
+| ---------------- | --------------------------------------------------------------------------------------- |
+| `crawlerTarget`  | Product URL. Only param affecting what's added.                                         |
+| `metadataSource` | Analytics only. Default `PartnerWishButton`. `ProductSearch` reads `sourceId` from URL. |
+| `source`         | Analytics only.                                                                         |
 
-### 1. Automated tests
+- No params for title/price/image/note/wishlist → set in form.
+- Logged out → `/login?origin=quickadd&redirect=…` → back after login.
+- Close: page built for shop iframes; calls `window.top.postMessage("onClose")` 700 ms after save + on ✕. In popup, `top` = page itself → content script catches it → background closes popup.
+
+## Dev
+
+[Vite+](https://viteplus.dev) (`vp`) for install/test/lint/fmt/types. `web-ext` for run/package.
+**pnpm only** (pinned in `devEngines`). Vite+ aliasing in `pnpm-workspace.yaml`. Commit `pnpm-lock.yaml`.
 
 ```sh
-vpr test
-vpr validate
+vp install     # deps + pre-commit hook
+vpr dev        # Firefox w/ extension, live reload
+vpr test       # tests once (vp test = watch)
+vp check       # fmt + lint + types (--fix)
+vpr validate   # vp check + web-ext lint
+vpr build      # zip → dist/
 ```
 
-The unit tests cover how the quick-add URL is built, which pages are addable, which pages may be closed, and how the popup is centred. `validate` checks the manifest
-against Mozilla's add-on linter.
+- Other Firefox: `WEB_EXT_FIREFOX=nightly vpr dev` or `=/path/to/firefox`.
+- Pre-commit: `vp check --fix` on staged files.
 
-### 2. Manual test in Firefox
+## Testing
 
-1. Log in at <https://onskeskyen.dk> in Firefox. With `vpr dev`, log in inside the browser window it opens, because
-   `web-ext` uses a fresh, temporary profile.
-2. Start the extension, either with `vpr dev` or by loading it manually (see below).
-3. The cloud button appears directly in the toolbar. If you installed an older version where it was unpinned, Firefox
-   remembers that choice: remove the extension and add it again, or pin it from the extensions menu.
-4. Open a product page, e.g. any product on elgiganten.dk, proshop.dk or zalando.dk.
-5. Click the button and check that:
-   - a small popup window (480×760) opens centred over the browser, showing
-     `https://onskeskyen.dk/da/quick-add?crawlerTarget=<product URL>`
-   - Ønskeskyen shows the product's title, image and price
-   - you can pick a wishlist and the wish appears in your account
-   - about 0.7 s after saving, the popup closes and focus returns to the product page
-   - clicking the ✕ in the quick-add form also closes the popup
-6. Negative checks: clicking on `about:newtab`, an `about:` page or an onskeskyen.dk page does nothing.
-7. Debug: in `about:debugging#/runtime/this-firefox`, click **Inspect** on the extension to see the background
-   console.
+**Auto:** `vpr test && vpr validate`. Covers URL building, addable pages, closable pages, popup centring + manifest lint.
 
-### Loading manually
+**Manual:**
 
-Go to `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and select `src/manifest.json`.
-The extension stays loaded until Firefox restarts.
+1. `vpr dev` (fresh temp profile → log in to onskeskyen.dk there).
+2. Cloud button in toolbar. Missing → old unpinned install remembered; reinstall or pin via extensions menu.
+3. Open product (elgiganten.dk, proshop.dk, zalando.dk) → click.
+4. Expect:
+   - 480×760 popup, centred, showing quick-add URL
+   - product title/image/price shown
+   - pick wishlist → wish in account
+   - ~0.7 s after save → popup closes, back on product
+   - ✕ also closes popup
+5. Negative: `about:` pages + onskeskyen.dk pages → nothing.
+6. Debug: `about:debugging#/runtime/this-firefox` → **Inspect**.
 
-### Installing permanently
+## Install
 
-Release Firefox only installs signed extensions permanently. Sign the extension through
-[addons.mozilla.org](https://addons.mozilla.org/developers/) as "unlisted" (`web-ext sign`). Or set
-`xpinstall.signatures.required = false` in `about:config` on Firefox Developer Edition, Nightly or ESR. Release Firefox ignores this setting.
+- **Temporary:** `about:debugging#/runtime/this-firefox` → **Load Temporary Add-on…** → `src/manifest.json`. Gone on restart.
+- **Permanent:** release Firefox needs signing. AMO "unlisted" via `web-ext sign`. Dev Edition/Nightly/ESR: `xpinstall.signatures.required = false`.
