@@ -28,7 +28,8 @@ product. Nothing goes to anyone else, nothing is stored, and nothing runs in the
 
 ## Install
 
-Coming soon to Firefox Add-ons. Until then, see [Development](#development) to run it locally.
+**[Get Wishdrop on Firefox Add-ons](https://addons.mozilla.org/firefox/addon/wishdrop-for-%C3%B8nskeskyen/)**
+(updates automatically).
 
 Works in Firefox and Firefox-based browsers on desktop. Supports [onskeskyen.dk](https://onskeskyen.dk).
 
